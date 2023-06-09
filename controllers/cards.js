@@ -29,39 +29,66 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
+    .orFail(new Error('Not Found ID'))
     .then((card) => res.send({ data: card }))
-    .catch(() => {
-      if (!Card[cardId]) {
-        res.status(DEFAULT_ERROR)
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Карточка не найдена' });
+      } else if (err.message === 'Not Found ID') {
+        res.status(NOT_FOUND_ERROR)
           .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: err.message });
       }
     });
 };
 
 module.exports.likeCard = (req, res) => {
   const { cardId } = req.params;
+  const { _id } = req.user;
   Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: _id } },
     { new: true },
   )
+    .orFail(new Error('Not Found ID'))
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(DEFAULT_ERROR)
-      .send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Карточка не найдена' });
+      } else if (err.message === 'Not Found ID') {
+        res.status(NOT_FOUND_ERROR)
+          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: err.message });
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
   const { cardId } = req.params;
+  const { _id } = req.user;
   Card.findByIdAndRemove(
     cardId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: _id } },
     { new: true },
   )
+    .orFail(new Error('Not Found ID'))
     .then((card) => res.send({ data: card }))
-    .catch(() => {
-      if (!Card[cardId]) {
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Карточка не найдена' });
+      } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
           .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: err.message });
       }
     });
 };
