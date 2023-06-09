@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { bad_request_error, not_found_error, default_error } = require('../errors/errors');
+const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../errors/errors');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
@@ -7,22 +7,22 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: _id })
     .then((card) => res.send({ data: card }))
-    .catch(err => {
+    .catch((err) => {
       if (!name || !link || err.message) {
-        res.status(bad_request_error)
+        res.status(BAD_REQUEST_ERROR)
           .send({ message: `Переданы некорректные данные при создании карточки` });
         return;
-      } else {
-        res.status(default_error)
+      } {
+        res.status(DEFAULT_ERROR)
           .send({ message: err.message })
-      }
+      };
     });
 };
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(default_error)
+    .catch((err) => res.status(DEFAULT_ERROR)
       .send({ message: err.message }));
 };
 
@@ -33,8 +33,8 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch(() => {
       if (!Card[cardId]) {
-        res.status(default_error)
-          .send({ message: `Карточка с указанным id: ${cardId} не найдена` })
+        res.status(DEFAULT_ERROR)
+          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
       }
     });
 };
@@ -47,7 +47,7 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(default_error)
+    .catch((err) => res.status(DEFAULT_ERROR)
       .send({ message: err.message }));
 };
 
@@ -56,14 +56,13 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndRemove(
     cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => res.send({ data: card }))
     .catch(() => {
       if (!Card[cardId]) {
-        res.status(ERROR_NOT_FOUND)
-          .send({ message: `Карточка с указанным id: ${cardId} не найдена` })
+        res.status(NOT_FOUND_ERROR)
+          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
       }
     });
 };
-

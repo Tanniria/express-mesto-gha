@@ -6,17 +6,18 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(error => {
-      if (!name || !about || !avatar || error.message) {
+    .catch(err => {
+      if (!name || !about || !avatar || err.message) {
         res.status(bad_request_error)
           .send({ message: `Переданы некорректные данные` });
         return;
       } else {
         res.status(default_error)
-          .send({ message: error.message })
+          .send({ message: err.message })
       }
     })
 };
+
 
 module.exports.getUsers = (req, res) => {
   User.find({})
