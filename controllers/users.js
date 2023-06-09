@@ -1,4 +1,4 @@
-const { bad_request_error, not_found_error, default_error } = require('../errors/errors');
+const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../errors/errors');
 const User = require('../models/user');
 
 module.exports.createUser = (req, res) => {
@@ -6,23 +6,21 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(err => {
+    .catch((err) => {
       if (!name || !about || !avatar || err.message) {
-        res.status(bad_request_error)
-          .send({ message: `Переданы некорректные данные` });
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Переданы некорректные данные' });
         return;
-      } else {
-        res.status(default_error)
-          .send({ message: err.message })
       }
-    })
+      res.status(DEFAULT_ERROR)
+        .send({ message: err.message });
+    });
 };
-
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(default_error)
+    .catch((err) => res.status(DEFAULT_ERROR)
       .send({ message: err.message }));
 };
 
@@ -30,15 +28,14 @@ module.exports.getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => res.send({ data: user }))
-    .catch(err => {
+    .catch((err) => {
       if (!User[userId]) {
-        res.status(bad_request_error)
-          .send({ message: `Переданы некорректные данные` })
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Переданы некорректные данные' });
         return;
-      } else {
-        res.status(default_error)
-          .send({ message: err.message })
       }
+      res.status(DEFAULT_ERROR)
+        .send({ message: err.message });
     });
 };
 
@@ -52,22 +49,22 @@ module.exports.updateUserProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false
-    })
+      upsert: false,
+    },
+  )
     .then((user) => res.send({ data: user }))
-    .catch(err => {
+    .catch((err) => {
       if (!name || !about || err.message) {
-        res.status(bad_request_error)
-          .send({ message: `Переданы некорректные данные` })
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Переданы некорректные данные' });
         return;
-      } else if (!User[_id]) {
-        res.status(not_found_error)
+      } if (!User[_id]) {
+        res.status(BAD_REQUEST_ERROR)
           .send({ message: `Пользователь по указанному id:${_id} не найден` });
         return;
-      } else {
-        res.status(default_error)
-          .send({ message: err.message })
       }
+      res.status(BAD_REQUEST_ERROR)
+        .send({ message: err.message });
     });
 };
 
@@ -81,21 +78,21 @@ module.exports.updateUserAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false
-    })
+      upsert: false,
+    },
+  )
     .then((user) => res.send({ data: user }))
-    .catch(err => {
+    .catch((err) => {
       if (!avatar) {
-        res.status(bad_request_error)
-          .send({ message: `Переданы некорректные данные` })
+        res.status(BAD_REQUEST_ERROR)
+          .send({ message: 'Переданы некорректные данные' });
         return;
-      } else if (!User[_id]) {
-        res.status(not_found_error)
+      } if (!User[_id]) {
+        res.status(NOT_FOUND_ERROR)
           .send({ message: `Пользователь по указанному id:${_id} не найден` });
         return;
-      } else {
-        res.status(default_error)
-          .send({ message: err.message })
       }
+      res.status(DEFAULT_ERROR)
+        .send({ message: err.message });
     });
 };

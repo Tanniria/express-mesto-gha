@@ -10,12 +10,11 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (!name || !link || err.message) {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: `Переданы некорректные данные при создании карточки` });
+          .send({ message: 'Переданы некорректные данные при создании карточки' });
         return;
-      } {
-        res.status(DEFAULT_ERROR)
-          .send({ message: err.message })
-      };
+      }
+      res.status(DEFAULT_ERROR)
+        .send({ message: err.message });
     });
 };
 
