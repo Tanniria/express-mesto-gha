@@ -1,9 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { NOT_FOUND_ERROR } = require('./errors/errors');
+const { NOT_FOUND_ERROR } = require('./utils/errors');
 
 const { PORT = 3000 } = process.env;
-
 const app = express();
 app.use(express.json());
 
@@ -17,7 +16,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/cards', require('./routes/cards'));
-
 app.use('/users', require('./routes/users'));
 
 app.use('/*', (req, res) => {

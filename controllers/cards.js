@@ -1,19 +1,10 @@
 const Card = require('../models/card');
-
-const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../errors/errors');
-
-module.exports.getCards = (req, res) => {
-  Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(DEFAULT_ERROR)
-      .send({ message: err.message }));
-};
+const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../utils/errors');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const { _id } = req.user;
 
-  Card.create({ name, link, owner: _id })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (!name || !link || err.message) {
@@ -26,10 +17,15 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  const { cardId } = req.params;
+module.exports.getCards = (req, res) => {
+  Card.find({})
+    .then((cards) => res.send({ data: cards }))
+    .catch((err) => res.status(DEFAULT_ERROR)
+      .send({ message: err.message }));
+};
 
-  Card.findByIdAndRemove(cardId)
+module.exports.deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.cardId)
     .orFail(new Error('Not Found ID'))
     .then(() => res.send({ message: 'Пост удален' }))
     .catch((err) => {
@@ -47,11 +43,9 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  const { cardId } = req.params;
-  const { _id } = req.user;
   Card.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: _id } },
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .orFail(new Error('Not Found ID'))
@@ -71,12 +65,9 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
-  const { _id } = req.user;
-  const { cardId } = req.params;
-
   Card.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: _id } },
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .orFail(new Error('Not Found ID'))
