@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
+
 const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../errors/errors');
 
 module.exports.getCards = (req, res) => {
@@ -25,22 +27,40 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  const { cardId } = req.params;
+// module.exports.deleteCard = (req, res) => {
+//   const { cardId } = req.params;
 
-  Card.findByIdAndRemove(cardId)
-    .orFail(new Error('Not Found ID'))
-    .then(() => res.send({ message: 'Пост удален' }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERROR)
-          .send({ message: 'Карточка не найдена' });
-      } else if (err.message === 'Not Found ID') {
-        res.status(NOT_FOUND_ERROR)
-          .send({ message: 'Запрашиваемая карточка не найдена' });
+//   Card.findByIdAndRemove(cardId)
+//     .orFail(new Error('Not Found ID'))
+//     .then(() => res.send({ message: 'Пост удален' }))
+//     .catch((err) => {
+//       if (err.name === 'CastError') {
+//         res.status(BAD_REQUEST_ERROR)
+//           .send({ message: 'Карточка не найдена' });
+//       } else if (err.message === 'Not Found ID') {
+//         res.status(NOT_FOUND_ERROR)
+//           .send({ message: 'Запрашиваемая карточка не найдена' });
+//       } else {
+//         res.status(DEFAULT_ERROR)
+//           .send({ message: err.message });
+//       }
+//     });
+// };
+
+module.exports.deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
-        res.status(DEFAULT_ERROR)
-          .send({ message: err.message });
+        res.send({ data: card });
+      }
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(DEFAULT_ERROR).send({ message: err.message });
       }
     });
 };
