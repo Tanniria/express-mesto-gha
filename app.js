@@ -19,7 +19,7 @@ app.use('/cards', require('./routes/cards'));
 
 app.use('/users', require('./routes/users'));
 
-app.use('*', (req, res) => {
+app.use('/*', (req, res) => {
   res.send({ message: 'Произошла  ошибка на сервере' });
 });
 

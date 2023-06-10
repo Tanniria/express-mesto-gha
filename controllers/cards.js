@@ -30,7 +30,7 @@ module.exports.deleteCard = (req, res) => {
 
   Card.findByIdAndRemove(cardId)
     .orFail(new Error('Not Found ID'))
-    .then((card) => res.send({ data: card }))
+    .then(() => res.send({ message: 'Пост удален' }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)

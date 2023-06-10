@@ -27,15 +27,19 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
+    .orFail(new Error('Not Found ID'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (!User[userId]) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
-        return;
+      } else if (err.message === 'Not Found ID') {
+        res.status(NOT_FOUND_ERROR)
+          .send({ message: `Пользователь с указанным id: ${userId} не найден` });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: err.message });
       }
-      res.status(DEFAULT_ERROR)
-        .send({ message: err.message });
     });
 };
 
@@ -49,7 +53,6 @@ module.exports.updateUserProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false,
     },
   )
     .then((user) => res.send({ data: user }))
@@ -78,7 +81,6 @@ module.exports.updateUserAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false,
     },
   )
     .then((user) => res.send({ data: user }))
