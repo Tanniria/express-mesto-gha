@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: 'Карточка не найдена' });
+          .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
           .send({ message: 'Запрашиваемая карточка не найдена' });
@@ -59,7 +59,7 @@ module.exports.likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: 'Карточка не найдена' });
+          .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
           .send({ message: 'Запрашиваемая карточка не найдена' });
@@ -84,7 +84,7 @@ module.exports.dislikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: 'Карточка не найдена' });
+          .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
           .send({ message: 'Запрашиваемая карточка не найдена' });
