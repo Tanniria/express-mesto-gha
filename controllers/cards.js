@@ -1,6 +1,13 @@
 const Card = require('../models/card');
 const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../errors/errors');
 
+module.exports.getCards = (req, res) => {
+  Card.find({})
+    .then((cards) => res.send({ data: cards }))
+    .catch((err) => res.status(DEFAULT_ERROR)
+      .send({ message: err.message }));
+};
+
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const { _id } = req.user;
@@ -8,21 +15,14 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: _id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (!name || !link || err.message) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: 'Переданы некорректные данные при создании карточки' });
-        return;
+          .send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: err.message });
       }
-      res.status(DEFAULT_ERROR)
-        .send({ message: err.message });
     });
-};
-
-module.exports.getCards = (req, res) => {
-  Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(DEFAULT_ERROR)
-      .send({ message: err.message }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -37,7 +37,7 @@ module.exports.deleteCard = (req, res) => {
           .send({ message: 'Карточка не найдена' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
-          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+          .send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(DEFAULT_ERROR)
           .send({ message: err.message });
@@ -61,7 +61,7 @@ module.exports.likeCard = (req, res) => {
           .send({ message: 'Карточка не найдена' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
-          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+          .send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(DEFAULT_ERROR)
           .send({ message: err.message });
@@ -85,7 +85,7 @@ module.exports.dislikeCard = (req, res) => {
           .send({ message: 'Карточка не найдена' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
-          .send({ message: `Карточка с указанным id: ${cardId} не найдена` });
+          .send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(DEFAULT_ERROR)
           .send({ message: err.message });

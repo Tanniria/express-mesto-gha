@@ -35,7 +35,7 @@ module.exports.getUser = (req, res) => {
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
         res.status(NOT_FOUND_ERROR)
-          .send({ message: `Пользователь с указанным id: ${userId} не найден` });
+          .send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(DEFAULT_ERROR)
           .send({ message: err.message });
@@ -63,7 +63,7 @@ module.exports.updateUserProfile = (req, res) => {
         return;
       } if (!User[_id]) {
         res.status(BAD_REQUEST_ERROR)
-          .send({ message: `Пользователь по указанному id:${_id} не найден` });
+          .send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.status(BAD_REQUEST_ERROR)
@@ -91,7 +91,7 @@ module.exports.updateUserAvatar = (req, res) => {
         return;
       } if (!User[_id]) {
         res.status(NOT_FOUND_ERROR)
-          .send({ message: `Пользователь по указанному id:${_id} не найден` });
+          .send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.status(DEFAULT_ERROR)
