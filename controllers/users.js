@@ -1,18 +1,23 @@
+const { ValidationError } = require('mongoose').Error;
+const { CastError } = require('mongoose').Error;
+
 const User = require('../models/user');
 const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../utils/errors');
+
+const STATUS_CREATED = 201;
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(STATUS_CREATED).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof ValidationError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(DEFAULT_ERROR)
-          .send({ message: err.message });
+          .send({ message: 'Произошла  ошибка на сервере' });
       }
     });
 };
@@ -20,8 +25,8 @@ module.exports.createUser = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(DEFAULT_ERROR)
-      .send({ message: err.message }));
+    .catch(() => res.status(DEFAULT_ERROR)
+      .send({ message: 'Произошла  ошибка на сервере' }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -29,7 +34,7 @@ module.exports.getUser = (req, res) => {
     .orFail(new Error('Not Found ID'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -37,7 +42,7 @@ module.exports.getUser = (req, res) => {
           .send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(DEFAULT_ERROR)
-          .send({ message: err.message });
+          .send({ message: 'Произошла  ошибка на сервере' });
       }
     });
 };
@@ -55,7 +60,7 @@ module.exports.updateUserProfile = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof ValidationError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -63,7 +68,7 @@ module.exports.updateUserProfile = (req, res) => {
           .send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(DEFAULT_ERROR)
-          .send({ message: err.message });
+          .send({ message: 'Произошла  ошибка на сервере' });
       }
     });
 };
@@ -81,7 +86,7 @@ module.exports.updateUserAvatar = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -89,7 +94,7 @@ module.exports.updateUserAvatar = (req, res) => {
           .send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(DEFAULT_ERROR)
-          .send({ message: err.message });
+          .send({ message: 'Произошла  ошибка на сервере' });
       }
     });
 };
