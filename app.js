@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { NOT_FOUND_ERROR } = require('./utils/errors');
+// const { NOT_FOUND_ERROR } = require('./utils/errors');
+const router = require('./routes');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -15,13 +16,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/cards', require('./routes/cards'));
-app.use('/users', require('./routes/users'));
+app.use(router);
 
-app.use('/*', (req, res) => {
-  res.status(NOT_FOUND_ERROR)
-    .send({ message: 'Произошла  ошибка на сервере' });
-});
+// app.use('/cards', require('./routes/cards'));
+// app.use('/users', require('./routes/users'));
+
+// app.use('/*', (req, res) => {
+//   res.status(NOT_FOUND_ERROR)
+//     .send({ message: 'Произошла  ошибка на сервере' });
+// });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
