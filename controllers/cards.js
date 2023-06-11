@@ -1,6 +1,3 @@
-// const { ValidationError } = require('mongoose').Error;
-// const { CastError } = require('mongoose').Error;
-const { mongoose } = require('mongoose');
 const Card = require('../models/card');
 const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../utils/errors');
 
@@ -12,7 +9,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(STATUS_CREATED).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else {
@@ -34,7 +31,7 @@ module.exports.deleteCard = (req, res) => {
     .orFail(new Error('Not Found ID'))
     .then(() => res.send({ message: 'Пост удален' }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -56,7 +53,7 @@ module.exports.likeCard = (req, res) => {
     .orFail(new Error('Not Found ID'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -78,7 +75,7 @@ module.exports.dislikeCard = (req, res) => {
     .orFail(new Error('Not Found ID'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
