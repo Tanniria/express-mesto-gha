@@ -1,6 +1,6 @@
-const { ValidationError } = require('mongoose').Error;
-const { CastError } = require('mongoose').Error;
-
+// const { ValidationError } = require('mongoose').Error;
+// const { CastError } = require('mongoose').Error;
+const { mongoose } = require('mongoose');
 const User = require('../models/user');
 const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, DEFAULT_ERROR } = require('../utils/errors');
 
@@ -12,7 +12,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(STATUS_CREATED).send({ data: user }))
     .catch((err) => {
-      if (err instanceof ValidationError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else {
@@ -34,7 +34,7 @@ module.exports.getUser = (req, res) => {
     .orFail(new Error('Not Found ID'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof CastError) {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -60,7 +60,7 @@ module.exports.updateUserProfile = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof ValidationError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
@@ -86,7 +86,7 @@ module.exports.updateUserAvatar = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof CastError) {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(BAD_REQUEST_ERROR)
           .send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Not Found ID') {
