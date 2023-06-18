@@ -8,14 +8,24 @@ const ConflictError = require('../errors/ConflictError');
 const STATUS_CREATED = 201;
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-  bcrypt.hash(password, 10)
+  // const {
+  //   name, about, avatar, email, password,
+  // } = req.body;
+  bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
     }))
-    .then((user) => res.status(STATUS_CREATED).send({ data: user }))
+    .then((user) => res.status(STATUS_CREATED).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
+    }))
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с такой почтой уже существует'));
@@ -34,7 +44,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
         expiresIn: '7d',
       });
-      res.send({ _id: token });
+      res.send({ token });
     })
     .catch(next);
 };
