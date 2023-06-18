@@ -34,7 +34,8 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
         expiresIn: '7d',
       });
-      res.send({ _id: token });
+      res.cookies('token', token, { maxAge: 3600000, httpOnly: true })
+        .send('Авторизация прошла успешно');
     })
     .catch(next);
 };
