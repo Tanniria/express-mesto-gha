@@ -2,11 +2,21 @@ const { celebrate, Joi } = require('celebrate');
 
 const regex = /^(https?:\/\/)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?/;
 
-module.exports.validateLogin = celebrate({
+module.exports.validatesignin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
+});
+
+module.exports.validatesignup = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().required().pattern(regex),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }).unknown(true),
 });
 
 module.exports.validateGetUserId = celebrate({
@@ -32,7 +42,7 @@ module.exports.validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().pattern(regex),
-  }),
+  }).unknown(true),
 });
 
 module.exports.validateCardId = celebrate({
