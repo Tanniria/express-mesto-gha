@@ -8,23 +8,15 @@ const ConflictError = require('../errors/ConflictError');
 const STATUS_CREATED = 201;
 
 module.exports.createUser = (req, res, next) => {
-  // const {
-  //   name, about, avatar, email, password,
-  // } = req.body;
-  bcrypt.hash(req.body.password, 10)
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-      email: req.body.email,
-      password: hash,
+      name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(STATUS_CREATED).send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-      _id: user._id,
+    .then(() => res.status(STATUS_CREATED).send({
+      name, about, avatar, email,
     }))
     .catch((err) => {
       if (err.code === 11000) {
