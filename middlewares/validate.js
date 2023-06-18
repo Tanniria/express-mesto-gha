@@ -11,8 +11,7 @@ module.exports.validateLogin = celebrate({
 
 module.exports.validateGetUserId = celebrate({
   params: Joi.object().keys({
-    // userId: Joi.string().required().length(24).hex(),
-    userId: Joi.string().id().hex().required(),
+    userId: Joi.string().required().length(24).hex(),
   }),
 });
 

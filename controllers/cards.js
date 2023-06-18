@@ -46,18 +46,6 @@ module.exports.deleteCard = (req, res, next) => {
       }
     });
 };
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         res.status(BAD_REQUEST_ERROR)
-//           .send({ message: 'Переданы некорректные данные' });
-//       } else if (err.message === 'Not Found ID') {
-//         res.status(NOT_FOUND_ERROR)
-//           .send({ message: 'Запрашиваемая карточка не найдена' });
-//       } else {
-//         res.status(DEFAULT_ERROR)
-//           .send({ message: 'Произошла  ошибка на сервере' });
-//       }
-//     });
 
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
@@ -79,19 +67,6 @@ module.exports.likeCard = (req, res, next) => {
       }
     });
 };
-// .then((card) => res.send({ data: card }))
-// .catch((err) => {
-//   if (err.name === 'CastError') {
-//     res.status(BAD_REQUEST_ERROR)
-//       .send({ message: 'Переданы некорректные данные' });
-//   } else if (err.message === 'Not Found ID') {
-//     res.status(NOT_FOUND_ERROR)
-//       .send({ message: 'Запрашиваемая карточка не найдена' });
-//   } else {
-//     res.status(DEFAULT_ERROR)
-//       .send({ message: 'Произошла  ошибка на сервере' });
-//   }
-// });
 
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
@@ -113,16 +88,3 @@ module.exports.dislikeCard = (req, res, next) => {
       }
     });
 };
-
-// .then((card) => res.send({ data: card }))
-// .catch((err) => {//   if (err.name === 'CastError') {
-//     res.status(BAD_REQUEST_ERROR)
-//       .send({ message: 'Переданы некорректные данные' });
-//   } else if (err.message === 'Not Found ID') {
-//     res.status(NOT_FOUND_ERROR)
-//       .send({ message: 'Запрашиваемая карточка не найдена' });
-//   } else {
-//     res.status(DEFAULT_ERROR)
-//       .send({ message: 'Произошла  ошибка на сервере' });
-//   }
-// });
