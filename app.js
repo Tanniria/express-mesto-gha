@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 const NotFoundError = require('./errors/notFoundError');
 const defaultError = require('./middlewares/defaultError');
 const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
