@@ -25,12 +25,14 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
+  Card.findById(req.params.cardId)
+    .orFail(new NotFoundError('Запрашиваемая карточка не найдена'))
     .then((card) => {
       const owner = card.owner.toString();
       if (req.user._id === owner) {
-        res.send({ data: card });
+        Card.deleteOne(card)
+          .then(() => res.send({ data: card }))
+          .catch(next);
       } else {
         next(new ForbiddenError('Нет прав на удаление чужих карточек'));
       }
@@ -50,7 +52,7 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
+    .orFail(new NotFoundError('Запрашиваемая карточка не найдена'))
     .then((card) => {
       res.send({ data: card });
     })
@@ -69,7 +71,7 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
+    .orFail(new NotFoundError('Запрашиваемая карточка не найдена'))
     .then((card) => {
       res.send({ data: card });
     })

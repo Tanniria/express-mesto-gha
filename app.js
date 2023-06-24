@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-
+const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
 const NotFoundError = require('./errors/notFoundError');
 const defaultError = require('./middlewares/defaultError');
@@ -9,13 +9,20 @@ const { createUser, login } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 const { validatesignin, validatesignup } = require('./middlewares/validate');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 app.use(express.json());
+app.use(limiter);
 app.use(helmet());
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(DB_URL);
 
 app.use('/signin', validatesignin, login);
 app.use('/signup', validatesignup, createUser);

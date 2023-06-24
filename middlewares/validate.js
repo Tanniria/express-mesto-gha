@@ -16,7 +16,7 @@ module.exports.validatesignup = celebrate({
     avatar: Joi.string().pattern(regex),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-  }).unknown(true),
+  }),
 });
 
 module.exports.validateGetUserId = celebrate({
@@ -42,7 +42,7 @@ module.exports.validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().pattern(regex),
-  }).unknown(true),
+  }),
 });
 
 module.exports.validateCardId = celebrate({
