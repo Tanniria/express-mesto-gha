@@ -48,7 +48,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => res.send({ data: user }))
@@ -62,7 +62,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  const { userId } = req.params;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => res.send({ data: user }))
