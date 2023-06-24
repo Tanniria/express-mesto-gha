@@ -7,7 +7,6 @@ const STATUS_CREATED = 201;
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(STATUS_CREATED).send({ data: card }))
     .catch((err) => {
@@ -27,15 +26,13 @@ module.exports.getCards = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      throw new NotFoundError('Запрашиваемая карточка не найдена');
-    })
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((card) => {
       const owner = card.owner.toString();
       if (req.user._id === owner) {
         res.send({ data: card });
       } else {
-        throw new ForbiddenError('Нет прав на удаление чужих карточек');
+        next(new ForbiddenError('Нет прав на удаление чужих карточек'));
       }
     })
     .catch((err) => {
@@ -53,9 +50,7 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new NotFoundError('Запрашиваемая карточка не найдена');
-    })
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((card) => {
       res.send({ data: card });
     })
@@ -74,9 +69,7 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new NotFoundError('Запрашиваемая карточка не найдена');
-    })
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((card) => {
       res.send({ data: card });
     })
